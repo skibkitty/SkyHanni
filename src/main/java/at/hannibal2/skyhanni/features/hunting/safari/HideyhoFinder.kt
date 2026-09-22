@@ -1,5 +1,7 @@
 package at.hannibal2.skyhanni.features.hunting.safari
 
+// the package didn't autogenerate for my UniqueCritterTracker.kt file when i made it, do i just use the exact same package as this file?
+// also is there a way to easily check for needed imports in IntelliJ IDEA ?
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandGraphs
@@ -26,13 +28,25 @@ import kotlin.time.Duration.Companion.seconds
 @SkyHanniModule
 object HideyhoFinder {
 
+
+    //ok so get the config stuff?
     private val config get() = SkyHanniMod.feature.hunting.safari
 
-    private val patternGroup = RepoPattern.group("hunting.safari.hideyho-finder")
+    // it's a computed getter, it re-fetches SkyHanniMod.feature.hunting.safari every time "config" is read in this file i think
 
+
+    // what does RepoPattern mean? what is a patternGroup?
+    private val patternGroup = RepoPattern.group("hunting.safari.hideyho-finder")
+    // its sh's pattern system, RepoPattern.group makes a named group of patterns (allows these patterns to be controlled/hotfixed from the external skyhanni repo, so if the chat messages change it wont require a whole new mod release)
+
+
+
+    // is this what the chat message has to match? so i'd do something like val hauntedPattern by patternGroup.pattern... ??
     private val startPattern by patternGroup.pattern(
         "first-found", "\\[MOB] Hideyho: Hehe, you found me!",
     )
+    // first arg is the key, second is the regex string, patternGroup.pattern(..., ...) registers one named pattern onto the group?
+    // 'by' - lazy delegated properrty? the pattern is built once on first access?  so like = but instead of defining it at the start, it's defined when it's accessed for the first time?
 
     private val beginHidingPattern by patternGroup.pattern(
         "begin-hiding", "\\[MOB] Hideyho: No peeking!",
@@ -48,8 +62,10 @@ object HideyhoFinder {
     private var startLocation: LorenzVec? = null
     private var reportBug = false
 
+    //i'm assuming i'll need this exact line in my unique critter tracker feature    @HandleEvent(onlyOnIsland = IslandType.SAFARI)
     @HandleEvent(onlyOnIsland = IslandType.SAFARI)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
+        // so every time there's a chat event this function runs?   yeah pretty much,
         if (!config.hideyhoFinder) return
 
         val playerLocation = LocationUtils.playerLocation()
